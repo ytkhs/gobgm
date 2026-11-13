@@ -10,21 +10,24 @@ func init() {
 	RegisterExitProcess()
 
 	if _, err := exec.LookPath(PlayCmd); err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
 func main() {
 
-	if len(os.Args) == 1 {
-		fmt.Println("please input term")
-		return
+	for _, arg := range os.Args[1:] {
+		if arg == "--help" || arg == "-h" {
+			ShowHelp()
+			return
+		}
 	}
 
-	if os.Args[1] == "--help" {
+	if len(os.Args) == 1 || os.Args[1][0:1] == "-" {
+		fmt.Fprintln(os.Stderr, "please input term")
 		ShowHelp()
-		return
+		os.Exit(1)
 	}
 
 	query, rate, shuffle, list := ProcessArgs()
@@ -33,6 +36,11 @@ func main() {
 	params.Term = query
 
 	result := <-SearchMusic(params)
+
+	if len(result.Results) == 0 {
+		fmt.Fprintf(os.Stderr, "no results for %q\n", query)
+		os.Exit(1)
+	}
 
 	if shuffle {
 		result.Results.Shuffle()
@@ -90,7 +98,7 @@ func ProcessArgs() (query string, rate string, shuffle bool, list bool) {
 		case "--list", "-l":
 			list = true
 		default:
-			fmt.Printf("unknown option %s\n", v)
+			fmt.Fprintf(os.Stderr, "unknown option %s (see --help)\n", v)
 			os.Exit(1)
 		}
 
