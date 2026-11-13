@@ -11,7 +11,7 @@ Download music preview files from [iTunes Search API](https://www.apple.com/itun
 ## installation
 
 ```
-go get github.com/ytkhs/gobgm
+go install github.com/ytkhs/gobgm@latest
 ```
 
 ## usage
