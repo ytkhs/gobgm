@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 var (
@@ -46,8 +47,10 @@ type Music struct {
 	ArtistName     string `json:"artistName"`
 	TrackName      string `json:"trackName"`
 	PreviewURL     string `json:"previewUrl"`
-	CollectionName string `json:"CollectionName"`
-	TrackViewURL   string `json:"TrackViewURL"`
+	CollectionName string `json:"collectionName"`
+	TrackViewURL   string `json:"trackViewUrl"`
+	ReleaseDate    string `json:"releaseDate"`
+	Genre          string `json:"primaryGenreName"`
 }
 
 type ITunesResponse struct {
@@ -114,9 +117,24 @@ func Play(fileName string, rate string) {
 
 func Info(music Music, num int, total int) {
 	fmt.Printf("* (%d/%d)\n", num, total)
-	fmt.Printf("♪ %s - %s / %s\n", music.TrackName, music.ArtistName, music.CollectionName)
+	fmt.Printf("♪ %s - %s / %s%s\n", music.TrackName, music.ArtistName, music.CollectionName, music.details())
 	fmt.Printf("# %s\n", music.TrackViewURL)
 	fmt.Println()
+}
+
+// details formats as " (2012, J-Pop)", omitting fields the API left empty.
+func (m Music) details() string {
+	var parts []string
+	if len(m.ReleaseDate) >= 4 {
+		parts = append(parts, m.ReleaseDate[:4])
+	}
+	if m.Genre != "" {
+		parts = append(parts, m.Genre)
+	}
+	if len(parts) == 0 {
+		return ""
+	}
+	return " (" + strings.Join(parts, ", ") + ")"
 }
 
 func Download(url string) <-chan string {
