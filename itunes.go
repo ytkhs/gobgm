@@ -26,6 +26,7 @@ type ITunesRequestParams struct {
 	Country string
 	Lang    string
 	Media   string
+	Entity  string
 	Limit   string
 }
 
@@ -35,6 +36,7 @@ func DefaultITunesRequestParams() (d ITunesRequestParams) {
 		Country: "JP",
 		Lang:    "ja_jp",
 		Media:   "music",
+		Entity:  "song",
 		Limit:   "200",
 	}
 	return
@@ -73,6 +75,7 @@ func SearchMusic(v ITunesRequestParams) <-chan ITunesResponse {
 	params.Add("country", v.Country)
 	params.Add("lang", v.Lang)
 	params.Add("media", v.Media)
+	params.Add("entity", v.Entity)
 	params.Add("limit", v.Limit)
 
 	go func() {

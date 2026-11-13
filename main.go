@@ -44,7 +44,7 @@ func main() {
 	}
 
 	for i, music := range result.Results {
-		Info(music, i+1, result.Count)
+		Info(music, i+1, len(result.Results))
 		Play(<-Download(music.PreviewURL), rate)
 	}
 
