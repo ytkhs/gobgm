@@ -4,14 +4,10 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"runtime"
 )
 
 func init() {
 	RegisterExitProcess()
-	if envvar := os.Getenv("GOMAXPROCS"); envvar == "" {
-		runtime.GOMAXPROCS(runtime.NumCPU())
-	}
 
 	if _, err := exec.LookPath(PlayCmd); err != nil {
 		fmt.Println(err)

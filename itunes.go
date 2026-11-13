@@ -4,14 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
 	"os/exec"
-	"time"
 )
 
 var (
@@ -61,11 +59,9 @@ func (self *Musics) Shuffle() {
 
 	musics := *self
 
-	rand.Seed(time.Now().UnixNano())
-	for i := range musics {
-		j := rand.Intn(i + 1)
+	rand.Shuffle(len(musics), func(i, j int) {
 		musics[i], musics[j] = musics[j], musics[i]
-	}
+	})
 }
 
 func SearchMusic(v ITunesRequestParams) <-chan ITunesResponse {
@@ -131,12 +127,11 @@ func Download(url string) <-chan string {
 		}
 		defer response.Body.Close()
 
-		file, err := ioutil.TempFile(os.TempDir(), "bgm_tmp_")
-		downloadedFiles = append(downloadedFiles, file.Name())
-
+		file, err := os.CreateTemp("", "bgm_tmp_")
 		if err != nil {
 			log.Fatal(err)
 		}
+		downloadedFiles = append(downloadedFiles, file.Name())
 		defer file.Close()
 
 		io.Copy(file, response.Body)
